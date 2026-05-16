@@ -1,0 +1,9 @@
+{
+  "name": "igreja-presenca-functions",
+  "version": "1.0.0",
+  "dependencies": {
+    "google-spreadsheet": "^4.1.2",
+    "google-auth-library": "^9.6.3",
+    "googleapis": "^137.1.0"
+  }
+}
