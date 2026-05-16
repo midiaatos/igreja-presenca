@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Igreja Atos de Amor Manaus — Presença</title>
+  <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --cream:#f5e6c8;--cream2:#faf7f0;--yellow:#f5b731;--yellow2:#c98f00;
+      --lilac:#b39ddb;--lilac2:#7c5cbf;--dark:#2e343b;--brown:#5a4a2e;
+      --text:#2e343b;--muted:#5a5048;--hint:#9a8e80;--border:#d0c8bc;--radius:10px;
+    }
+    html,body{min-height:100%;background:var(--cream2);font-family:'Courier Prime',monospace;color:var(--text)}
+    body{display:flex;flex-direction:column;align-items:center}
+    .header{width:100%;background:#fff;border-bottom:3px solid var(--yellow);padding:1.75rem 1.5rem 1.5rem;text-align:center;position:relative}
+    .header::after{content:'';display:block;position:absolute;bottom:-7px;left:0;right:0;height:3px;background:var(--lilac)}
+    .logo-wrap{display:flex;justify-content:center;margin-bottom:0.9rem}
+    .header-title{font-family:'Courier Prime',monospace;font-size:1.05rem;font-weight:700;color:var(--dark);text-transform:uppercase;letter-spacing:0.04em;white-space:nowrap;line-height:1.2}
+    .header-title em{color:var(--yellow2);font-style:normal}
+    .date-line{font-family:'Courier Prime',monospace;font-size:0.68rem;color:var(--hint);letter-spacing:0.08em;text-transform:uppercase;margin-top:0.35rem}
+    .container{width:100%;max-width:460px;padding:1.75rem 1.25rem 3rem;flex:1;display:flex;flex-direction:column}
+    .geo-checking{text-align:center;padding:3rem 1rem;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .geo-icon{font-size:2.5rem;margin-bottom:1rem}
+    .geo-title{font-size:1.1rem;font-weight:700;color:var(--dark);margin-bottom:0.5rem;text-transform:uppercase}
+    .geo-sub{font-size:0.82rem;color:var(--muted);line-height:1.6;max-width:280px;text-align:center}
+    .geo-blocked{text-align:center;padding:3rem 1rem;flex:1;display:none;flex-direction:column;align-items:center;justify-content:center}
+    .geo-blocked h2{font-size:1.1rem;font-weight:700;color:#c62828;margin-bottom:0.5rem;text-transform:uppercase}
+    .geo-blocked p{font-size:0.82rem;color:var(--muted);line-height:1.6;max-width:280px;margin:0 auto}
+    .dist-info{margin-top:0.75rem;font-size:0.75rem;color:var(--hint)}
+    .steps{display:flex;align-items:center;justify-content:center;margin-bottom:1.75rem}
+    .step-dot{width:36px;height:36px;border-radius:50%;border:2px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;font-family:'Courier Prime',monospace;font-size:0.9rem;font-weight:700;color:var(--hint);transition:all 0.25s;flex-shrink:0}
+    .step-dot.active{border-color:var(--yellow);background:var(--yellow);color:var(--dark)}
+    .step-dot.done{border-color:var(--lilac);background:var(--lilac);color:#fff}
+    .step-line{flex:1;height:2px;background:var(--border);max-width:52px;transition:background 0.25s}
+    .step-line.done{background:var(--lilac)}
+    .panel{display:none;flex-direction:column;flex:1}
+    .panel.active{display:flex}
+    .panel-title{font-family:'Courier Prime',monospace;font-size:1.2rem;font-weight:700;color:var(--dark);text-transform:uppercase;margin-bottom:0.25rem}
+    .panel-title em{color:var(--yellow2);font-style:normal}
+    .panel-sub{font-size:0.82rem;color:var(--muted);margin-bottom:1.4rem;line-height:1.6}
+    .field{margin-bottom:1rem}
+    .field label{display:block;font-size:0.68rem;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--lilac2);margin-bottom:0.4rem}
+    .field input[type=text],.field select{width:100%;padding:0.85rem 1rem;background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);color:var(--dark);font-family:'Courier Prime',monospace;font-size:0.95rem;outline:none;transition:border-color 0.2s;-webkit-appearance:none;appearance:none}
+    .field input[type=text]:focus,.field select:focus{border-color:var(--yellow)}
+    .field input::placeholder{color:var(--hint)}
+    .select-wrap{position:relative}
+    .select-wrap::after{content:"▾";position:absolute;right:1rem;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+    .membro-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:0.75rem 1rem;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.75rem}
+    .membro-av{width:40px;height:40px;border-radius:50%;background:rgba(179,157,219,0.18);border:2px solid var(--lilac);display:flex;align-items:center;justify-content:center;font-family:'Courier Prime',monospace;font-size:1.1rem;font-weight:700;color:var(--lilac2);flex-shrink:0}
+    .membro-info{flex:1}
+    .membro-name{font-weight:700;font-size:0.9rem;color:var(--dark)}
+    .membro-tipo{font-size:0.7rem;color:var(--hint);margin-top:1px}
+    .membro-remove{background:none;border:none;cursor:pointer;color:#ccc;font-size:1rem;padding:0.25rem;transition:color 0.15s}
+    .membro-remove:hover{color:#d03030}
+    .btn-add{width:100%;padding:0.88rem;margin-bottom:0.85rem;border:none;border-radius:var(--radius);background:var(--brown);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;font-family:'Courier Prime',monospace;font-size:0.92rem;font-weight:700;color:var(--cream)}
+    .btn-main{width:100%;padding:0.95rem;border:none;border-radius:var(--radius);background:var(--yellow);cursor:pointer;font-family:'Courier Prime',monospace;font-size:0.95rem;font-weight:700;color:#2e1f00}
+    .btn-main:disabled{opacity:0.45;cursor:not-allowed}
+    .btn-ghost{width:100%;background:transparent;color:var(--muted);border:1.5px solid var(--border);border-radius:var(--radius);margin-top:0.6rem;padding:0.75rem;font-family:'Courier Prime',monospace;font-size:0.8rem;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:0.06em}
+    .cap-row{display:flex;gap:0.6rem;margin-bottom:0.5rem}
+    .btn-cap{flex:1;padding:0.85rem;background:var(--brown);border:none;border-radius:var(--radius);color:var(--cream);font-family:'Courier Prime',monospace;font-size:0.88rem;font-weight:700;cursor:pointer}
+    .alert{padding:0.75rem 1rem;border-radius:8px;font-size:0.82rem;margin-bottom:0.75rem;display:none;font-family:'Courier Prime',monospace}
+    .alert-error{background:#fdeaea;border:1px solid #e57373;color:#c62828}
+    .camera-wrap{position:relative;width:100%;border-radius:var(--radius);overflow:hidden;background:#111;border:2px solid var(--border);margin-bottom:0.75rem}
+    .camera-inner{position:relative;aspect-ratio:3/4;max-height:320px}
+    #video{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);display:block}
+    #canvas-preview{width:100%;height:100%;object-fit:cover;transform:scaleX(-1);display:none}
+    .face-ring{position:absolute;top:50%;left:50%;transform:translate(-50%,-56%);width:58%;aspect-ratio:1;border:2.5px solid rgba(245,183,49,0.85);border-radius:50%;pointer-events:none}
+    .face-ring::after{content:'centralize seu rosto';position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);font-size:0.6rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(245,183,49,0.95);white-space:nowrap}
+    .confirm-card{background:#fff;border:1.5px solid var(--border);border-radius:var(--radius);padding:0.9rem 1.1rem;display:flex;align-items:center;gap:0.9rem;margin-bottom:0.6rem}
+    .confirm-photo{width:56px;height:56px;border-radius:50%;object-fit:cover;border:2.5px solid var(--yellow);flex-shrink:0}
+    .confirm-av{width:56px;height:56px;border-radius:50%;background:rgba(179,157,219,0.15);border:2.5px solid var(--lilac);display:flex;align-items:center;justify-content:center;font-family:'Courier Prime',monospace;font-size:1.3rem;font-weight:700;color:var(--lilac2);flex-shrink:0}
+    .confirm-name{font-family:'Courier Prime',monospace;font-size:1rem;font-weight:700;color:var(--dark);margin-bottom:0.15rem}
+    .confirm-detail{font-size:0.72rem;color:var(--hint)}
+    .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(46,31,0,0.2);border-top-color:#2e1f00;border-radius:50%;animation:spin 0.6s linear infinite;vertical-align:middle;margin-right:5px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .success-wrap{text-align:center;padding:2rem 0;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center}
+    .success-badge{width:76px;height:76px;border-radius:50%;background:rgba(245,183,49,0.15);border:2.5px solid var(--yellow);display:flex;align-items:center;justify-content:center;font-size:2rem;margin:0 auto 1.25rem;animation:pop 0.4s ease}
+    @keyframes pop{0%{transform:scale(0.4);opacity:0}70%{transform:scale(1.1)}100%{transform:scale(1);opacity:1}}
+    .success-title{font-family:'Courier Prime',monospace;font-size:1.6rem;font-weight:700;text-transform:uppercase;color:var(--yellow2);margin-bottom:0.5rem}
+    .success-sub{font-size:0.88rem;color:var(--muted);line-height:1.7}
+    .success-list{margin:1rem 0;text-align:left;width:100%}
+    .success-item{display:flex;align-items:center;gap:0.6rem;padding:0.5rem 0;border-bottom:1px solid var(--border);font-size:0.85rem;color:var(--dark)}
+    .success-item:last-child{border-bottom:none}
+    .s-check{color:var(--lilac);font-weight:700}
+    .footer-note{font-family:'Courier Prime',monospace;font-size:0.65rem;color:var(--hint);text-align:center;margin-top:0.75rem}
+  </style>
+</head>
+<body>
+<div class="header">
+  <div class="logo-wrap"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 302 302" width="110" height="110">
+  <defs>
+    <clipPath id="c1"><path d="M 1 0.742 L 301 0.742 L 301 300.477 L 1 300.477 Z" clip-rule="nonzero"/></clipPath>
+    <clipPath id="c2"><path d="M 29 179 L 271 179 L 271 300.477 L 29 300.477 Z" clip-rule="nonzero"/></clipPath>
+  </defs>
+  <g clip-path="url(#c1)"><path fill="#2e343b" d="M 150.824 0.742 C 68.117 0.742 1.066 67.832 1.066 150.586 C 1.066 233.34 68.117 300.43 150.824 300.43 C 233.535 300.43 300.586 233.34 300.586 150.586 C 300.586 67.832 233.535 0.742 150.824 0.742 Z M 149.664 289.887 C 72.281 289.887 9.582 227.125 9.582 149.723 C 9.582 72.324 72.258 9.539 149.664 9.539 C 227.066 9.539 289.766 72.301 289.766 149.703 C 289.766 227.102 227.043 289.863 149.664 289.863 Z"/></g>
+  <path fill="#2e343b" d="M 192.449 64.082 C 207.105 78.75 215.293 92.039 215.293 114.227 C 215.293 150.957 185.91 180.777 149.664 180.777 C 113.414 180.777 84.031 150.98 84.031 114.227 C 84.031 94.742 93.059 75.676 106.273 64.082 C 90.453 75.816 81.074 96.254 81.074 117.156 C 81.074 154.891 111.902 185.48 149.941 185.48 C 187.98 185.48 218.832 154.867 218.832 117.156 C 218.832 93.438 208.871 78.168 192.449 64.082 Z"/>
+  <path fill="#2e343b" d="M 155.594 115.504 L 158.781 180.125 C 157.316 180.801 155.781 181.313 154.199 181.664 C 152.617 182.012 151.012 182.199 149.383 182.199 C 147.754 182.199 146.148 182.012 144.566 181.664 C 142.984 181.313 141.449 180.801 139.984 180.125 L 143.313 115.504 L 118 115.504 L 120.094 105.637 L 143.754 105.637 L 144.801 85.66 L 154.082 85.66 L 155.059 105.637 L 179.723 105.637 L 181.164 115.504 Z"/>
+  <g clip-path="url(#c2)"><path fill="#2e343b" d="M 29.219 221.863 L 62.625 182.27 L 48.668 206.941 C 52.832 204.5 58.949 201.961 66.465 199.844 C 77.445 196.723 88.637 195.188 100.063 195.305 C 110.625 195.445 119.719 195.559 130.398 200.215 C 137.703 203.453 144.102 207.969 149.594 213.766 C 156.434 206.805 164.461 201.73 173.695 198.516 C 179.348 196.609 186.61 195.094 200.008 195.652 C 211.688 196.141 229.86 198.285 251.309 206.664 L 234.883 179.848 L 270.293 221.656 C 248.844 268.633 203.219 299.195 152.781 300.406 C 100.152 301.641 51.438 270.703 29.219 221.816 Z"/></g>
+  <path fill="#2e343b" d="M 222.461 170.652 C 228.625 179.055 234.418 187.504 239.582 196.07 C 225.531 191.602 211.129 189.367 196.402 189.32 C 182.629 189.344 175.023 191.508 171.367 192.695 C 164.668 194.91 158.434 198.051 152.688 202.148 C 155.641 198.773 160.41 195.305 167.602 191.508 C 177.836 186.133 187.074 185.715 195.473 185.434 C 203.359 185.156 216.203 184.434 231.277 189.695 Z"/>
+  <path fill="#2e343b" d="M 76.168 170.395 C 70.023 178.801 64.23 187.25 59.066 195.84 C 73.121 191.371 87.496 189.113 102.246 189.09 C 116.02 189.09 123.629 191.277 127.281 192.465 C 133.98 194.676 140.215 197.816 145.965 201.914 C 143.008 198.516 138.098 194.676 130.91 190.883 C 120.695 185.504 111.438 185.086 103.039 184.805 C 95.176 184.551 82.449 184.199 67.371 189.461 Z"/>
+</svg></div>
+  <div class="header-title">REGISTRO DE <em>PRESENÇA</em> DE MEMBROS</div>
+  <div class="date-line" id="date-line"></div>
+</div>
+<div class="container">
+  <div class="geo-checking" id="geo-checking">
+    <div class="geo-icon">📍</div>
+    <div class="geo-title">Verificando localização...</div>
+    <p class="geo-sub">Precisamos confirmar que você está na igreja. Por favor, permita o acesso à localização.</p>
+  </div>
+  <div class="geo-blocked" id="geo-blocked">
+    <div class="geo-icon">🚫</div>
+    <h2>Fora do perímetro</h2>
+    <p>O registro de presença só pode ser feito dentro da Igreja Atos de Amor Manaus.</p>
+    <p class="dist-info" id="dist-info"></p>
+  </div>
+  <div id="main-view" style="display:none">
+    <div class="steps">
+      <div class="step-dot active" id="dot-1">1</div>
+      <div class="step-line" id="line-1"></div>
+      <div class="step-dot" id="dot-2">2</div>
+      <div class="step-line" id="line-2"></div>
+      <div class="step-dot" id="dot-3">✓</div>
+    </div>
+    <div class="panel active" id="panel-1">
+      <p class="panel-title">DADOS DO <em>MEMBRO</em></p>
+      <p class="panel-sub">Preencha seu nome. Pais podem adicionar filhos antes de continuar.</p>
+      <div id="error-1" class="alert alert-error"></div>
+      <div class="field">
+        <label for="nome">Nome completo</label>
+        <input type="text" id="nome" placeholder="Ex: Maria da Silva" autocomplete="name">
+      </div>
+      <div class="field">
+        <label for="tipo">Categoria</label>
+        <div class="select-wrap">
+          <select id="tipo">
+            <option value="Membro">Membro</option>
+            <option value="Visitante">Visitante</option>
+          </select>
+        </div>
+      </div>
+      <div id="membros-lista"></div>
+      <button class="btn-add" onclick="addFilho()">＋ &nbsp;Adicionar filho(a) ou dependente</button>
+      <button class="btn-main" onclick="goToCamera()">PRÓXIMO — TIRAR FOTO →</button>
+      <div class="footer-note">✝ Igreja Atos de Amor Manaus</div>
+    </div>
+    <div class="panel" id="panel-2">
+      <p class="panel-title">FOTO DE <em>CONFIRMAÇÃO</em></p>
+      <p class="panel-sub" id="camera-sub">Centralize seu rosto e tire a selfie.</p>
+      <div id="error-2" class="alert alert-error"></div>
+      <div class="camera-wrap">
+        <div class="camera-inner">
+          <video id="video" autoplay playsinline muted></video>
+          <canvas id="canvas-preview"></canvas>
+          <div class="face-ring" id="face-ring"></div>
+        </div>
+      </div>
+      <div class="cap-row" id="capture-row">
+        <button class="btn-cap" onclick="capturePhoto()">📷 TIRAR FOTO</button>
+      </div>
+      <div id="retake-row" style="display:none" class="cap-row">
+        <button class="btn-cap" onclick="retakePhoto()">↩ REFAZER</button>
+        <button class="btn-main" style="flex:2;padding:0.85rem" onclick="goToConfirm()">USAR ESTA →</button>
+      </div>
+      <button class="btn-ghost" onclick="goBack(1)">← VOLTAR</button>
+    </div>
+    <div class="panel" id="panel-3">
+      <p class="panel-title">CON<em>FIRMAR</em></p>
+      <p class="panel-sub">Revise e confirme a presença de todos.</p>
+      <div id="error-3" class="alert alert-error"></div>
+      <div id="confirm-cards"></div>
+      <button class="btn-main" id="btn-confirm" onclick="submitPresence()">✝ CONFIRMAR PRESENÇA</button>
+      <button class="btn-ghost" onclick="goBack(2)">← VOLTAR</button>
+    </div>
+    <div class="panel" id="panel-success">
+      <div class="success-wrap">
+        <div class="success-badge">✓</div>
+        <div class="success-title">CONFIRMADO!</div>
+        <p class="success-sub">Que a Paz de Deus esteja com vocês.<br>Obrigado por estar conosco hoje!</p>
+        <div class="success-list" id="success-list"></div>
+        <button class="btn-main" style="margin-top:1.5rem" onclick="resetForm()">＋ REGISTRAR OUTRA FAMÍLIA</button>
+      </div>
+    </div>
+  </div>
+</div>
+<canvas id="canvas-capture" style="display:none"></canvas>
+<script>
+  // ── CONFIGURAÇÕES ─────────────────────────────
+  const CHURCH_LAT  = -2.986062;
+  const CHURCH_LNG  = -60.002027;
+  const RAIO_METROS = 20;
+  const SERVICE_NAME = 'Culto Dominical';
+  // URL do Google Apps Script (preencher após criar)
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbyYF6UyV45U4oPKYyxHJr3Iez9eibaPHTuOldFcJW1aMgM4yIIFeJUlhBfgg6muA1qrpg/exec';
+  // ─────────────────────────────────────────────
+
+  let stream = null, capturedBase64 = null, membros = [];
+
+  document.getElementById('date-line').textContent =
+    new Date().toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).toUpperCase();
+
+  function calcDist(lat1,lon1,lat2,lon2){
+    const R=6371000,dLat=(lat2-lat1)*Math.PI/180,dLon=(lon2-lon1)*Math.PI/180;
+    const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+    return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+  }
+
+  function iniciarGeo(){
+    if(!navigator.geolocation){mostrarBloqueado('GPS não disponível neste dispositivo.');return;}
+    navigator.geolocation.getCurrentPosition(
+      pos=>{
+        const dist=calcDist(pos.coords.latitude,pos.coords.longitude,CHURCH_LAT,CHURCH_LNG);
+        document.getElementById('geo-checking').style.display='none';
+        if(dist<=RAIO_METROS){
+          document.getElementById('main-view').style.display='block';
+        }else{
+          document.getElementById('dist-info').textContent=`Você está a aproximadamente ${Math.round(dist)} metros da igreja.`;
+          document.getElementById('geo-blocked').style.display='flex';
+        }
+      },
+      err=>{
+        document.getElementById('geo-checking').style.display='none';
+        mostrarBloqueado(err.code===1?'Permissão de localização negada. Ative o GPS e tente novamente.':'Não foi possível verificar sua localização.');
+      },
+      {enableHighAccuracy:true,timeout:10000,maximumAge:0}
+    );
+  }
+  function mostrarBloqueado(msg){const el=document.getElementById('geo-blocked');el.querySelector('p').textContent=msg;el.style.display='flex';}
+  iniciarGeo();
+
+  function addFilho(){
+    const nome=document.getElementById('nome').value.trim();
+    const tipo=document.getElementById('tipo').value;
+    if(nome.length<2){showError(1,'Preencha o nome antes de adicionar.');return;}
+    clearError(1);membros.push({nome,tipo,foto:null});renderLista();
+    document.getElementById('nome').value='';document.getElementById('tipo').value='Membro';document.getElementById('nome').focus();
+  }
+  function renderLista(){
+    const el=document.getElementById('membros-lista');
+    if(!membros.length){el.innerHTML='';return;}
+    el.innerHTML=membros.map((m,i)=>`<div class="membro-card"><div class="membro-av">${m.nome.charAt(0).toUpperCase()}</div><div class="membro-info"><div class="membro-name">${m.nome}</div><div class="membro-tipo">${m.tipo}</div></div><button class="membro-remove" onclick="removeMembro(${i})">✕</button></div>`).join('');
+  }
+  function removeMembro(i){membros.splice(i,1);renderLista();}
+
+  function goToCamera(){
+    const nome=document.getElementById('nome').value.trim();const tipo=document.getElementById('tipo').value;
+    if(nome.length<2){showError(1,'Informe pelo menos um nome.');return;}
+    clearError(1);membros.unshift({nome,tipo,foto:null});
+    document.getElementById('camera-sub').textContent=`Foto de ${membros[0].nome} para confirmar a presença.`;
+    setStep(2);startCamera();
+  }
+  async function startCamera(){
+    try{
+      stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:720},height:{ideal:960}},audio:false});
+      const v=document.getElementById('video');v.srcObject=stream;v.style.display='block';
+      document.getElementById('canvas-preview').style.display='none';
+      document.getElementById('face-ring').style.display='block';
+      document.getElementById('capture-row').style.display='flex';
+      document.getElementById('retake-row').style.display='none';
+    }catch(e){showError(2,'Câmera não disponível. Verifique as permissões.');}
+  }
+  function capturePhoto(){
+    const video=document.getElementById('video');const canvas=document.getElementById('canvas-capture');
+    canvas.width=video.videoWidth||480;canvas.height=video.videoHeight||640;
+    const ctx=canvas.getContext('2d');ctx.save();ctx.scale(-1,1);ctx.drawImage(video,-canvas.width,0,canvas.width,canvas.height);ctx.restore();
+    capturedBase64=canvas.toDataURL('image/jpeg',0.75);
+    const p=document.getElementById('canvas-preview');p.width=canvas.width;p.height=canvas.height;p.getContext('2d').drawImage(canvas,0,0);
+    p.style.display='block';document.getElementById('video').style.display='none';
+    document.getElementById('face-ring').style.display='none';document.getElementById('capture-row').style.display='none';document.getElementById('retake-row').style.display='flex';
+  }
+  function retakePhoto(){
+    capturedBase64=null;document.getElementById('video').style.display='block';document.getElementById('canvas-preview').style.display='none';
+    document.getElementById('face-ring').style.display='block';document.getElementById('capture-row').style.display='flex';document.getElementById('retake-row').style.display='none';
+  }
+  function goToConfirm(){
+    if(!capturedBase64){showError(2,'Tire uma foto primeiro.');return;}
+    clearError(2);membros[0].foto=capturedBase64;stopCamera();
+    const hora=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+    document.getElementById('confirm-cards').innerHTML=membros.map(m=>`<div class="confirm-card">${m.foto?`<img class="confirm-photo" src="${m.foto}" alt="">`:`<div class="confirm-av">${m.nome.charAt(0).toUpperCase()}</div>`}<div><div class="confirm-name">${m.nome}</div><div class="confirm-detail">${m.tipo} · ${hora} · ${SERVICE_NAME}</div></div></div>`).join('');
+    setStep(3);
+  }
+  function goBack(to){
+    if(to===1){stopCamera();capturedBase64=null;if(membros.length>0){const r=membros.shift();document.getElementById('nome').value=r.nome;document.getElementById('tipo').value=r.tipo;renderLista();}setStep(1);}
+    else if(to===2){setStep(2);startCamera();}
+  }
+  function stopCamera(){if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}}
+
+  async function submitPresence(){
+    const btn=document.getElementById('btn-confirm');
+    btn.disabled=true;btn.innerHTML='<span class="spinner"></span> REGISTRANDO...';clearError(3);
+    try{
+      const res=await fetch(GAS_URL,{
+        method:'POST',
+        body:JSON.stringify({membros,servico:SERVICE_NAME,data:new Date().toISOString()}),
+      });
+      const json=await res.json();
+      if(json.success){
+        document.getElementById('success-list').innerHTML=membros.map(m=>`<div class="success-item"><span class="s-check">✓</span><span><strong>${m.nome}</strong> — ${m.tipo}</span></div>`).join('');
+        setStep('success');
+      }else{throw new Error(json.error||'Erro');}
+    }catch(e){
+      showError(3,'Erro ao registrar. Verifique sua conexão e tente novamente.');
+      btn.disabled=false;btn.innerHTML='✝ CONFIRMAR PRESENÇA';
+    }
+  }
+  function resetForm(){membros=[];capturedBase64=null;document.getElementById('nome').value='';document.getElementById('tipo').value='Membro';renderLista();setStep(1);}
+  function setStep(n){
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    if(n==='success'){document.getElementById('panel-success').classList.add('active');[1,2,3].forEach(i=>{document.getElementById('dot-'+i).classList.remove('active');document.getElementById('dot-'+i).classList.add('done');if(i<3)document.getElementById('line-'+i).classList.add('done');});return;}
+    document.getElementById('panel-'+n).classList.add('active');
+    for(let i=1;i<=3;i++){const d=document.getElementById('dot-'+i);d.classList.remove('active','done');if(i<n)d.classList.add('done');else if(i===n)d.classList.add('active');if(i<3){const l=document.getElementById('line-'+i);l.classList.remove('done');if(i<n)l.classList.add('done');}}
+  }
+  function showError(s,m){const e=document.getElementById('error-'+s);e.textContent=m;e.style.display='block'}
+  function clearError(s){document.getElementById('error-'+s).style.display='none'}
+</script>
+</body>
+</html>
