@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — Igreja Atos de Amor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#f5f4f0;--white:#fff;--dark:#2e343b;--muted:#5a5048;--hint:#9a8e80;
+      --border:#e0d8cc;--yellow:#f5b731;--yellow2:#c98f00;
+      --lilac:#b39ddb;--lilac2:#7c5cbf;--green:#2e7d32;--red:#c62828;
+      --radius:10px;--card-radius:14px;
+    }
+    body{min-height:100vh;background:var(--bg);font-family:'Inter',sans-serif;color:var(--dark)}
+
+    /* ── LOGIN ── */
+    .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
+    .login-card{background:var(--white);border-radius:var(--card-radius);border:1px solid var(--border);padding:2.5rem 2rem;width:100%;max-width:380px;text-align:center;box-shadow:0 4px 24px rgba(0,0,0,0.08)}
+    .login-logo{font-size:2.5rem;margin-bottom:0.75rem}
+    .login-title{font-size:1.3rem;font-weight:700;color:var(--dark);margin-bottom:0.25rem}
+    .login-sub{font-size:0.85rem;color:var(--muted);margin-bottom:2rem}
+    .login-field{text-align:left;margin-bottom:1rem}
+    .login-field label{display:block;font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--lilac2);margin-bottom:0.4rem}
+    .login-field input{width:100%;padding:0.85rem 1rem;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:0.95rem;color:var(--dark);outline:none;transition:border-color 0.2s}
+    .login-field input:focus{border-color:var(--yellow)}
+    .login-btn{width:100%;padding:0.95rem;border:none;border-radius:var(--radius);background:var(--yellow);font-family:'Inter',sans-serif;font-size:0.95rem;font-weight:700;color:#2e1f00;cursor:pointer;margin-top:0.5rem;transition:all 0.2s}
+    .login-btn:hover{background:#e6a820}
+    .login-error{font-size:0.82rem;color:var(--red);margin-top:0.75rem;display:none}
+
+    /* ── ADMIN LAYOUT ── */
+    .admin-wrap{display:none;min-height:100vh}
+    .sidebar{width:240px;background:var(--dark);min-height:100vh;position:fixed;top:0;left:0;z-index:10;display:flex;flex-direction:column}
+    .sidebar-logo{padding:1.5rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.08)}
+    .sidebar-logo-title{font-size:0.75rem;font-weight:700;color:rgba(255,255,255,0.9);text-transform:uppercase;letter-spacing:0.1em;line-height:1.3}
+    .sidebar-logo-sub{font-size:0.65rem;color:rgba(255,255,255,0.4);margin-top:0.2rem}
+    .sidebar-nav{flex:1;padding:1rem 0}
+    .nav-item{display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1.25rem;cursor:pointer;transition:all 0.15s;font-size:0.85rem;font-weight:500;color:rgba(255,255,255,0.5);border-left:3px solid transparent}
+    .nav-item:hover{background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.85)}
+    .nav-item.active{background:rgba(245,183,49,0.1);color:var(--yellow);border-left-color:var(--yellow)}
+    .nav-icon{font-size:1.1rem;width:20px;text-align:center}
+    .sidebar-footer{padding:1rem 1.25rem;border-top:1px solid rgba(255,255,255,0.08)}
+    .logout-btn{display:flex;align-items:center;gap:0.6rem;font-size:0.82rem;color:rgba(255,255,255,0.4);cursor:pointer;transition:color 0.15s;background:none;border:none;font-family:'Inter',sans-serif;padding:0}
+    .logout-btn:hover{color:#ff8888}
+
+    .main-content{margin-left:240px;padding:2rem;min-height:100vh}
+    .page{display:none}
+    .page.active{display:block}
+    .page-title{font-size:1.5rem;font-weight:700;color:var(--dark);margin-bottom:0.25rem}
+    .page-sub{font-size:0.85rem;color:var(--muted);margin-bottom:2rem}
+
+    /* Cards */
+    .cards-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem}
+    .stat-card{background:var(--white);border-radius:var(--card-radius);border:1px solid var(--border);padding:1.25rem 1.5rem}
+    .stat-label{font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--hint);margin-bottom:0.5rem}
+    .stat-value{font-size:2rem;font-weight:700;color:var(--dark)}
+    .stat-value.green{color:var(--green)}
+    .stat-value.yellow{color:var(--yellow2)}
+
+    /* Tabela */
+    .table-card{background:var(--white);border-radius:var(--card-radius);border:1px solid var(--border);overflow:hidden}
+    .table-header{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .table-title{font-size:0.95rem;font-weight:700;color:var(--dark)}
+    table{width:100%;border-collapse:collapse}
+    th{padding:0.75rem 1rem;text-align:left;font-size:0.72rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--hint);background:var(--bg);border-bottom:1px solid var(--border)}
+    td{padding:0.75rem 1rem;font-size:0.88rem;color:var(--dark);border-bottom:1px solid var(--border)}
+    tr:last-child td{border-bottom:none}
+    tr:hover td{background:rgba(245,183,49,0.04)}
+    .badge{display:inline-block;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.7rem;font-weight:600;letter-spacing:0.06em}
+    .badge-green{background:#e8f5e9;color:var(--green)}
+    .badge-red{background:#fdeaea;color:var(--red)}
+    .badge-blue{background:#e3f2fd;color:#1565c0}
+    .badge-purple{background:rgba(179,157,219,0.2);color:var(--lilac2)}
+
+    /* Config */
+    .config-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1.5rem}
+    .config-card{background:var(--white);border-radius:var(--card-radius);border:1px solid var(--border);padding:1.5rem}
+    .config-card-title{font-size:0.95rem;font-weight:700;color:var(--dark);margin-bottom:0.25rem}
+    .config-card-sub{font-size:0.8rem;color:var(--muted);margin-bottom:1.25rem}
+    .config-field{margin-bottom:1rem}
+    .config-field label{display:block;font-size:0.72rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:var(--lilac2);margin-bottom:0.4rem}
+    .config-field input,.config-field select,.config-field textarea{width:100%;padding:0.75rem 0.9rem;background:var(--bg);border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Inter',sans-serif;font-size:0.9rem;color:var(--dark);outline:none;transition:border-color 0.2s;resize:vertical}
+    .config-field input:focus,.config-field select:focus,.config-field textarea:focus{border-color:var(--yellow)}
+    .config-save{padding:0.75rem 1.5rem;border:none;border-radius:var(--radius);background:var(--yellow);font-family:'Inter',sans-serif;font-size:0.88rem;font-weight:700;color:#2e1f00;cursor:pointer;transition:all 0.2s}
+    .config-save:hover{background:#e6a820}
+    .config-save:disabled{opacity:0.5;cursor:not-allowed}
+
+    /* Toggle */
+    .toggle-row{display:flex;align-items:center;justify-content:space-between;padding:0.75rem 0;border-bottom:1px solid var(--border)}
+    .toggle-row:last-child{border-bottom:none}
+    .toggle-info{flex:1}
+    .toggle-label{font-size:0.9rem;font-weight:500;color:var(--dark)}
+    .toggle-desc{font-size:0.75rem;color:var(--hint);margin-top:0.1rem}
+    .toggle{position:relative;width:44px;height:24px;flex-shrink:0}
+    .toggle input{opacity:0;width:0;height:0}
+    .toggle-slider{position:absolute;inset:0;background:#ccc;border-radius:24px;cursor:pointer;transition:0.3s}
+    .toggle-slider::before{content:'';position:absolute;height:18px;width:18px;left:3px;bottom:3px;background:#fff;border-radius:50%;transition:0.3s}
+    .toggle input:checked+.toggle-slider{background:var(--yellow)}
+    .toggle input:checked+.toggle-slider::before{transform:translateX(20px)}
+
+    /* Upload foto */
+    .upload-area{border:2px dashed var(--border);border-radius:var(--radius);padding:2rem;text-align:center;cursor:pointer;transition:all 0.2s;position:relative}
+    .upload-area:hover{border-color:var(--yellow);background:rgba(245,183,49,0.04)}
+    .upload-area input{position:absolute;inset:0;opacity:0;cursor:pointer}
+    .upload-icon{font-size:2rem;margin-bottom:0.5rem}
+    .upload-text{font-size:0.85rem;color:var(--muted)}
+    .upload-preview{width:100%;max-height:160px;object-fit:cover;border-radius:var(--radius);margin-top:0.75rem;display:none}
+
+    /* Presença tempo real */
+    .presenca-list{max-height:400px;overflow-y:auto}
+    .presenca-item{display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1rem;border-bottom:1px solid var(--border)}
+    .presenca-item:last-child{border-bottom:none}
+    .presenca-av{width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0;border:2px solid var(--yellow)}
+    .presenca-av-placeholder{width:36px;height:36px;border-radius:50%;background:rgba(179,157,219,0.2);border:2px solid var(--lilac);display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:700;color:var(--lilac2);flex-shrink:0}
+    .presenca-nome{font-weight:600;font-size:0.9rem;color:var(--dark)}
+    .presenca-det{font-size:0.72rem;color:var(--hint);margin-top:0.1rem}
+    .presenca-hora{font-size:0.72rem;color:var(--hint);margin-left:auto;white-space:nowrap}
+
+    .btn-refresh{padding:0.5rem 1rem;border:1.5px solid var(--border);border-radius:var(--radius);background:var(--white);font-family:'Inter',sans-serif;font-size:0.8rem;font-weight:600;color:var(--muted);cursor:pointer;transition:all 0.2s}
+    .btn-refresh:hover{border-color:var(--yellow);color:var(--yellow2)}
+
+    .alert-success{background:#e8f5e9;border:1px solid #81c784;color:var(--green);padding:0.75rem 1rem;border-radius:var(--radius);font-size:0.85rem;margin-top:1rem;display:none}
+
+    @media(max-width:768px){
+      .sidebar{width:100%;min-height:auto;position:relative}
+      .main-content{margin-left:0}
+      .admin-wrap{flex-direction:column}
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="login-wrap">
+  <div class="login-card">
+    <div class="login-logo">⛪</div>
+    <div class="login-title">Painel Administrativo</div>
+    <div class="login-sub">Igreja Atos de Amor Manaus</div>
+    <div class="login-field">
+      <label>Usuário</label>
+      <input type="text" id="login-user" placeholder="admin" value="admin">
+    </div>
+    <div class="login-field">
+      <label>Senha</label>
+      <input type="password" id="login-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerLogin()">
+    </div>
+    <button class="login-btn" onclick="fazerLogin()">ENTRAR →</button>
+    <div class="login-error" id="login-error">Usuário ou senha incorretos.</div>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div class="admin-wrap" id="admin-wrap" style="display:none">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-logo">
+      <div class="sidebar-logo-title">⛪ Atos de Amor</div>
+      <div class="sidebar-logo-sub">Painel Administrativo</div>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" onclick="showPage('dashboard')">
+        <span class="nav-icon">📊</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="showPage('presenca')">
+        <span class="nav-icon">✅</span> Presenças do Dia
+      </div>
+      <div class="nav-item" onclick="showPage('membros')">
+        <span class="nav-icon">👥</span> Membros
+      </div>
+      <div class="nav-item" onclick="showPage('config')">
+        <span class="nav-icon">⚙️</span> Configurações
+      </div>
+      <div class="nav-item" onclick="showPage('aparencia')">
+        <span class="nav-icon">🎨</span> Aparência
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="logout-btn" onclick="fazerLogout()">🚪 Sair</button>
+    </div>
+  </div>
+
+  <!-- Conteúdo -->
+  <div class="main-content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-title">Dashboard</div>
+      <div class="page-sub" id="dashboard-data">Carregando dados...</div>
+      <div class="cards-row">
+        <div class="stat-card">
+          <div class="stat-label">Presentes Hoje</div>
+          <div class="stat-value green" id="stat-presentes">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Membros</div>
+          <div class="stat-value" id="stat-total">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Faltaram</div>
+          <div class="stat-value yellow" id="stat-faltaram">—</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Visitantes</div>
+          <div class="stat-value" id="stat-visitantes">—</div>
+        </div>
+      </div>
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title">Últimas presenças registradas</div>
+          <button class="btn-refresh" onclick="carregarDashboard()">↻ Atualizar</button>
+        </div>
+        <div class="presenca-list" id="ultimas-presencas">
+          <div style="padding:2rem;text-align:center;color:var(--hint)">Carregando...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRESENÇAS -->
+    <div class="page" id="page-presenca">
+      <div class="page-title">Presenças do Dia</div>
+      <div class="page-sub">Lista completa de hoje — atualiza em tempo real.</div>
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title" id="presenca-titulo">Carregando...</div>
+          <button class="btn-refresh" onclick="carregarPresencas()">↻ Atualizar</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table id="tabela-presencas">
+            <thead><tr>
+              <th>#</th><th>Nome</th><th>Tipo</th><th>Ministérios</th><th>Status</th><th>Horário</th><th>Foto</th>
+            </tr></thead>
+            <tbody id="presencas-body">
+              <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--hint)">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MEMBROS -->
+    <div class="page" id="page-membros">
+      <div class="page-title">Membros Cadastrados</div>
+      <div class="page-sub">Lista de todos os membros registrados pelo sistema.</div>
+      <div class="table-card">
+        <div class="table-header">
+          <div class="table-title" id="membros-titulo">Carregando...</div>
+          <button class="btn-refresh" onclick="carregarMembros()">↻ Atualizar</button>
+        </div>
+        <div style="overflow-x:auto">
+          <table id="tabela-membros">
+            <thead><tr>
+              <th>#</th><th>Nome</th><th>Tipo</th><th>Ministérios</th><th>Cadastrado em</th>
+            </tr></thead>
+            <tbody id="membros-body">
+              <tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--hint)">Carregando...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIGURAÇÕES -->
+    <div class="page" id="page-config">
+      <div class="page-title">Configurações</div>
+      <div class="page-sub">Ajuste o comportamento do sistema de presença.</div>
+      <div class="config-grid">
+        <div class="config-card">
+          <div class="config-card-title">⛪ Culto</div>
+          <div class="config-card-sub">Nome e configurações do culto atual.</div>
+          <div class="config-field">
+            <label>Nome do Culto</label>
+            <input type="text" id="cfg-culto" placeholder="Ex: Culto de Domingo">
+          </div>
+          <div class="config-field">
+            <label>Mensagem de boas-vindas</label>
+            <textarea id="cfg-boasvindas" rows="2" placeholder="Ex: Bem-vindo à Igreja Atos de Amor!"></textarea>
+          </div>
+          <button class="config-save" onclick="salvarConfig()">SALVAR</button>
+          <div class="alert-success" id="alert-config">✓ Configurações salvas!</div>
+        </div>
+
+        <div class="config-card">
+          <div class="config-card-title">📍 Geolocalização</div>
+          <div class="config-card-sub">Configure o raio de acesso ao sistema.</div>
+          <div class="config-field">
+            <label>Raio de acesso (metros)</label>
+            <input type="number" id="cfg-raio" placeholder="30" min="10" max="500">
+          </div>
+          <div class="config-field">
+            <label>Latitude da Igreja</label>
+            <input type="text" id="cfg-lat" placeholder="-2.986062">
+          </div>
+          <div class="config-field">
+            <label>Longitude da Igreja</label>
+            <input type="text" id="cfg-lng" placeholder="-60.002027">
+          </div>
+          <button class="config-save" onclick="salvarConfig()">SALVAR</button>
+        </div>
+
+        <div class="config-card">
+          <div class="config-card-title">🔧 Sistema</div>
+          <div class="config-card-sub">Ativar ou desativar funcionalidades.</div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">Sistema ativo</div>
+              <div class="toggle-desc">Permite novos registros</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="cfg-ativo" checked><span class="toggle-slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">Exigir GPS</div>
+              <div class="toggle-desc">Bloquear fora do perímetro</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="cfg-gps" checked><span class="toggle-slider"></span></label>
+          </div>
+          <div class="toggle-row">
+            <div class="toggle-info">
+              <div class="toggle-label">Foto obrigatória</div>
+              <div class="toggle-desc">Exigir selfie para registrar</div>
+            </div>
+            <label class="toggle"><input type="checkbox" id="cfg-foto" checked><span class="toggle-slider"></span></label>
+          </div>
+          <button class="config-save" style="margin-top:1rem" onclick="salvarConfig()">SALVAR</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- APARÊNCIA -->
+    <div class="page" id="page-aparencia">
+      <div class="page-title">Aparência</div>
+      <div class="page-sub">Personalize o visual do site de presença.</div>
+      <div class="config-grid">
+        <div class="config-card">
+          <div class="config-card-title">🖼️ Imagem de Fundo</div>
+          <div class="config-card-sub">Foto que aparece como fundo no site.</div>
+          <div class="upload-area" id="upload-area">
+            <input type="file" accept="image/*" onchange="previewFundo(this)">
+            <div class="upload-icon">📷</div>
+            <div class="upload-text">Clique para escolher uma foto<br><small style="color:var(--hint)">JPG, PNG — máx 2MB</small></div>
+            <img class="upload-preview" id="upload-preview">
+          </div>
+          <div style="margin-top:1rem;display:flex;gap:0.75rem">
+            <button class="config-save" onclick="salvarFundo()">SALVAR FUNDO</button>
+            <button class="config-save" style="background:transparent;border:1.5px solid var(--border);color:var(--muted)" onclick="removerFundo()">REMOVER</button>
+          </div>
+          <div class="alert-success" id="alert-fundo">✓ Fundo atualizado!</div>
+        </div>
+
+        <div class="config-card">
+          <div class="config-card-title">🎨 Cores</div>
+          <div class="config-card-sub">Personalize as cores principais.</div>
+          <div class="config-field">
+            <label>Cor primária (botões)</label>
+            <input type="color" id="cfg-cor-primary" value="#f5b731" style="height:40px;padding:4px">
+          </div>
+          <div class="config-field">
+            <label>Cor secundária (destaques)</label>
+            <input type="color" id="cfg-cor-secondary" value="#b39ddb" style="height:40px;padding:4px">
+          </div>
+          <div class="config-field">
+            <label>Cor de fundo</label>
+            <input type="color" id="cfg-cor-bg" value="#faf7f0" style="height:40px;padding:4px">
+          </div>
+          <button class="config-save" onclick="salvarCores()">SALVAR CORES</button>
+          <div class="alert-success" id="alert-cores">✓ Cores salvas!</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const ADMIN_USER = 'admin';
+  const ADMIN_PASS = '@Tom1029';
+  const GAS_URL = 'https://script.google.com/macros/s/AKfycbxa1XOL0doFEpW1F3ZUGx842PnJaUQTQogs9Ksz2Q-Rm6sTFjndN_Tx17viZM_FX4fIeA/exec';
+  const SHEET_ID = '1TF6PZsWp42dCq9DS04inWZUxwM8M-axAfyGEM3m6rgI';
+
+  let logado = false;
+
+  function fazerLogin(){
+    const user = document.getElementById('login-user').value.trim();
+    const pass = document.getElementById('login-pass').value;
+    if(user === ADMIN_USER && pass === ADMIN_PASS){
+      logado = true;
+      document.getElementById('login-wrap').style.display = 'none';
+      document.getElementById('admin-wrap').style.display = 'flex';
+      carregarDashboard();
+      carregarConfigs();
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+    }
+  }
+
+  function fazerLogout(){
+    logado = false;
+    document.getElementById('admin-wrap').style.display = 'none';
+    document.getElementById('login-wrap').style.display = 'flex';
+    document.getElementById('login-pass').value = '';
+  }
+
+  function showPage(page){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    document.getElementById('page-'+page).classList.add('active');
+    event.currentTarget.classList.add('active');
+    if(page==='presenca') carregarPresencas();
+    if(page==='membros') carregarMembros();
+    if(page==='dashboard') carregarDashboard();
+  }
+
+  // ── DASHBOARD ──────────────────────────────
+  async function carregarDashboard(){
+    const hoje = new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
+    document.getElementById('dashboard-data').textContent = hoje.replace(/\//g,'/');
+    try{
+      const res = await fetch(GAS_URL+'?admin=dashboard', {method:'GET', mode:'cors'});
+      const data = await res.json();
+      document.getElementById('stat-presentes').textContent = data.presentes ?? '—';
+      document.getElementById('stat-total').textContent = data.total ?? '—';
+      document.getElementById('stat-faltaram').textContent = data.faltaram ?? '—';
+      document.getElementById('stat-visitantes').textContent = data.visitantes ?? '—';
+
+      const ul = document.getElementById('ultimas-presencas');
+      if(data.ultimas && data.ultimas.length > 0){
+        ul.innerHTML = data.ultimas.map(p=>`
+          <div class="presenca-item">
+            <div class="presenca-av-placeholder">${p.nome.charAt(0).toUpperCase()}</div>
+            <div>
+              <div class="presenca-nome">${p.nome}</div>
+              <div class="presenca-det">${p.tipo}${p.ministerios?' · '+p.ministerios:''}</div>
+            </div>
+            <div class="presenca-hora">${p.horario}</div>
+          </div>`).join('');
+      } else {
+        ul.innerHTML = '<div style="padding:2rem;text-align:center;color:var(--hint)">Nenhuma presença registrada hoje</div>';
+      }
+    }catch(e){
+      document.getElementById('stat-presentes').textContent = '—';
+      document.getElementById('ultimas-presencas').innerHTML = '<div style="padding:2rem;text-align:center;color:var(--hint)">Erro ao carregar dados. Verifique a conexão.</div>';
+    }
+  }
+
+  // ── PRESENÇAS ──────────────────────────────
+  async function carregarPresencas(){
+    const tbody = document.getElementById('presencas-body');
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--hint)">Carregando...</td></tr>';
+    try{
+      const res = await fetch(GAS_URL+'?admin=presencas', {method:'GET', mode:'cors'});
+      const data = await res.json();
+      document.getElementById('presenca-titulo').textContent = `Presenças — ${data.data || new Date().toLocaleDateString('pt-BR')}`;
+      if(data.rows && data.rows.length > 0){
+        tbody.innerHTML = data.rows.map((r,i)=>`
+          <tr>
+            <td>${i+1}</td>
+            <td><strong>${r.nome}</strong></td>
+            <td><span class="badge ${r.tipo?.includes('Visitante')?'badge-blue':'badge-purple'}">${r.tipo||'—'}</span></td>
+            <td style="font-size:0.8rem;color:var(--muted)">${r.ministerios||'—'}</td>
+            <td><span class="badge ${r.status?.includes('Presente')?'badge-green':'badge-red'}">${r.status||'—'}</span></td>
+            <td style="color:var(--hint)">${r.horario||'—'}</td>
+            <td>${r.foto?`<a href="${r.foto}" target="_blank" style="color:var(--lilac2);font-size:0.8rem">📸 Ver</a>`:'—'}</td>
+          </tr>`).join('');
+      } else {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--hint)">Nenhum registro hoje</td></tr>';
+      }
+    }catch(e){
+      tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--hint)">Erro ao carregar</td></tr>';
+    }
+  }
+
+  // ── MEMBROS ────────────────────────────────
+  async function carregarMembros(){
+    const tbody = document.getElementById('membros-body');
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--hint)">Carregando...</td></tr>';
+    try{
+      const res = await fetch(GAS_URL+'?admin=membros', {method:'GET', mode:'cors'});
+      const data = await res.json();
+      document.getElementById('membros-titulo').textContent = `${data.total || 0} membros cadastrados`;
+      if(data.rows && data.rows.length > 0){
+        tbody.innerHTML = data.rows.map((r,i)=>`
+          <tr>
+            <td>${i+1}</td>
+            <td><strong>${r.nome}</strong></td>
+            <td><span class="badge badge-purple">${r.tipo||'Membro'}</span></td>
+            <td style="font-size:0.8rem;color:var(--muted)">${r.ministerios||'—'}</td>
+            <td style="color:var(--hint)">${r.cadastrado||'—'}</td>
+          </tr>`).join('');
+      } else {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--hint)">Nenhum membro cadastrado ainda</td></tr>';
+      }
+    }catch(e){
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--hint)">Erro ao carregar</td></tr>';
+    }
+  }
+
+  // ── CONFIGS ────────────────────────────────
+  async function carregarConfigs(){
+    try{
+      const res = await fetch(GAS_URL+'?admin=config', {method:'GET', mode:'cors'});
+      const data = await res.json();
+      if(data.config){
+        const c = data.config;
+        if(c.culto) document.getElementById('cfg-culto').value = c.culto;
+        if(c.boasvindas) document.getElementById('cfg-boasvindas').value = c.boasvindas;
+        if(c.raio) document.getElementById('cfg-raio').value = c.raio;
+        if(c.lat) document.getElementById('cfg-lat').value = c.lat;
+        if(c.lng) document.getElementById('cfg-lng').value = c.lng;
+        if(c.ativo !== undefined) document.getElementById('cfg-ativo').checked = c.ativo;
+        if(c.gps !== undefined) document.getElementById('cfg-gps').checked = c.gps;
+        if(c.foto !== undefined) document.getElementById('cfg-foto').checked = c.foto;
+        if(c.corPrimary) document.getElementById('cfg-cor-primary').value = c.corPrimary;
+        if(c.corSecondary) document.getElementById('cfg-cor-secondary').value = c.corSecondary;
+        if(c.corBg) document.getElementById('cfg-cor-bg').value = c.corBg;
+      }
+    }catch(e){ console.log('Configs não carregadas:', e); }
+  }
+
+  async function salvarConfig(){
+    const btn = event.currentTarget;
+    btn.disabled = true; btn.textContent = 'Salvando...';
+    const config = {
+      culto: document.getElementById('cfg-culto').value,
+      boasvindas: document.getElementById('cfg-boasvindas').value,
+      raio: document.getElementById('cfg-raio').value,
+      lat: document.getElementById('cfg-lat').value,
+      lng: document.getElementById('cfg-lng').value,
+      ativo: document.getElementById('cfg-ativo').checked,
+      gps: document.getElementById('cfg-gps').checked,
+      foto: document.getElementById('cfg-foto').checked,
+    };
+    try{
+      const payload = encodeURIComponent(JSON.stringify({admin:'config', config}));
+      await fetch(GAS_URL+'?adminSave='+payload, {method:'GET', mode:'cors'});
+      document.getElementById('alert-config').style.display = 'block';
+      setTimeout(()=>document.getElementById('alert-config').style.display='none', 3000);
+    }catch(e){}
+    btn.disabled = false; btn.textContent = 'SALVAR';
+  }
+
+  async function salvarCores(){
+    const config = {
+      corPrimary: document.getElementById('cfg-cor-primary').value,
+      corSecondary: document.getElementById('cfg-cor-secondary').value,
+      corBg: document.getElementById('cfg-cor-bg').value,
+    };
+    try{
+      const payload = encodeURIComponent(JSON.stringify({admin:'cores', config}));
+      await fetch(GAS_URL+'?adminSave='+payload, {method:'GET', mode:'cors'});
+      document.getElementById('alert-cores').style.display = 'block';
+      setTimeout(()=>document.getElementById('alert-cores').style.display='none', 3000);
+    }catch(e){}
+  }
+
+  function previewFundo(input){
+    const file = input.files[0];
+    if(!file) return;
+    const reader = new FileReader();
+    reader.onload = e=>{
+      const img = document.getElementById('upload-preview');
+      img.src = e.target.result;
+      img.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function salvarFundo(){
+    const input = document.querySelector('#upload-area input');
+    const file = input.files[0];
+    if(!file){ alert('Escolha uma imagem primeiro.'); return; }
+    if(file.size > 2*1024*1024){ alert('Imagem muito grande. Máx 2MB.'); return; }
+    const reader = new FileReader();
+    reader.onload = async e=>{
+      try{
+        const base64 = e.target.result;
+        const payload = encodeURIComponent(JSON.stringify({admin:'fundo', fundo:base64}));
+        await fetch(GAS_URL+'?adminSave='+payload, {method:'GET', mode:'cors'});
+        document.getElementById('alert-fundo').style.display = 'block';
+        setTimeout(()=>document.getElementById('alert-fundo').style.display='none', 3000);
+      }catch(e){}
+    };
+    reader.readAsDataURL(file);
+  }
+
+  async function removerFundo(){
+    try{
+      const payload = encodeURIComponent(JSON.stringify({admin:'fundo', fundo:''}));
+      await fetch(GAS_URL+'?adminSave='+payload, {method:'GET', mode:'cors'});
+      document.getElementById('upload-preview').style.display = 'none';
+      document.getElementById('alert-fundo').textContent = '✓ Fundo removido!';
+      document.getElementById('alert-fundo').style.display = 'block';
+      setTimeout(()=>{ document.getElementById('alert-fundo').style.display='none'; document.getElementById('alert-fundo').textContent='✓ Fundo atualizado!'; }, 3000);
+    }catch(e){}
+  }
+</script>
+</body>
+</html>
