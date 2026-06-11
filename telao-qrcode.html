@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=1920">
+<title>Sistema de Cadastro — Igreja Atos de Amor Manaus</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+
+  html,body{
+    width:100vw;height:100vh;overflow:hidden;
+    background:#060d1a;
+    font-family:'Inter',sans-serif;
+    display:flex;align-items:center;justify-content:center;
+    position:relative;
+  }
+
+  .bg{
+    position:fixed;inset:0;
+    background:
+      radial-gradient(ellipse 65% 90% at 15% 50%,rgba(37,99,235,0.22) 0%,transparent 65%),
+      radial-gradient(ellipse 55% 70% at 85% 50%,rgba(16,185,129,0.18) 0%,transparent 65%);
+    animation:bgp 7s ease-in-out infinite alternate;
+  }
+  @keyframes bgp{0%{opacity:.75}100%{opacity:1}}
+
+  .dots{
+    position:fixed;inset:0;
+    background-image:radial-gradient(circle,rgba(255,255,255,0.032) 1px,transparent 1px);
+    background-size:48px 48px;
+  }
+
+  .dline{
+    position:fixed;height:1px;width:100%;
+    background:linear-gradient(90deg,transparent,rgba(37,99,235,0.2),rgba(16,185,129,0.16),transparent);
+    animation:la 5s ease-in-out infinite;
+  }
+  .dline:nth-child(3){top:24%;animation-delay:0s}
+  .dline:nth-child(4){top:76%;animation-delay:2.5s}
+  @keyframes la{0%,100%{opacity:.25}50%{opacity:.85}}
+
+  /* LAYOUT */
+  .layout{
+    position:relative;z-index:10;
+    width:100vw;height:100vh;
+    display:flex;align-items:center;justify-content:center;
+    gap:8vw;padding:0 9vw;
+  }
+
+  /* ESQUERDA */
+  .left{flex:1;display:flex;flex-direction:column;gap:3.2vh;}
+
+  .badge{
+    display:inline-flex;align-items:center;gap:10px;
+    font-size:clamp(12px,1.1vw,18px);font-weight:700;
+    letter-spacing:0.22em;text-transform:uppercase;
+    color:#10b981;background:rgba(16,185,129,0.08);
+    border:1px solid rgba(16,185,129,0.3);
+    padding:8px 22px;border-radius:40px;width:fit-content;
+  }
+  .bdot{
+    width:9px;height:9px;border-radius:50%;background:#10b981;
+    box-shadow:0 0 10px #10b981;animation:bd 1.6s ease-in-out infinite;
+  }
+  @keyframes bd{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.2;transform:scale(.65)}}
+
+  .title{
+    font-family:'Bebas Neue',sans-serif;
+    font-size:clamp(60px,9vw,130px);
+    line-height:.88;letter-spacing:.03em;
+  }
+  .t1{
+    background:linear-gradient(135deg,#fff 0%,#bfdbfe 55%,#93c5fd 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block;
+  }
+  .t2{
+    background:linear-gradient(135deg,#6ee7b7 0%,#10b981 55%,#34d399 100%);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block;
+  }
+
+  .desc{
+    font-size:clamp(16px,1.6vw,26px);
+    color:rgba(255,255,255,.42);font-weight:300;
+    letter-spacing:.04em;line-height:1.65;max-width:560px;
+  }
+
+  .url-box{
+    display:flex;align-items:center;gap:18px;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);
+    border-radius:18px;padding:18px 28px;width:fit-content;
+  }
+  .uicon{
+    width:clamp(38px,3vw,50px);height:clamp(38px,3vw,50px);
+    background:linear-gradient(135deg,#2563eb,#10b981);
+    border-radius:13px;display:flex;align-items:center;justify-content:center;
+    font-size:clamp(18px,1.8vw,24px);flex-shrink:0;
+  }
+  .ulabel{font-size:clamp(10px,.8vw,13px);color:rgba(255,255,255,.28);letter-spacing:.18em;text-transform:uppercase;margin-bottom:5px}
+  .uval{font-size:clamp(14px,1.3vw,21px);color:rgba(255,255,255,.88);font-weight:600;letter-spacing:.01em}
+
+  .hint{
+    display:flex;align-items:center;gap:14px;
+    font-size:clamp(12px,1vw,18px);color:rgba(255,255,255,.3);
+    letter-spacing:.07em;text-transform:uppercase;
+  }
+  .hint::before{content:'';width:36px;height:1px;background:rgba(255,255,255,.12)}
+
+  /* DIVISOR */
+  .divider{
+    width:1px;height:42vh;flex-shrink:0;
+    background:linear-gradient(to bottom,transparent,rgba(255,255,255,.07),transparent);
+  }
+
+  /* DIREITA */
+  .right{display:flex;flex-direction:column;align-items:center;gap:2.5vh;flex-shrink:0;}
+
+  .qr-frame{
+    position:relative;
+    padding:5px;border-radius:28px;
+    background:linear-gradient(135deg,#2563eb,#10b981);
+    animation:gw 3s ease-in-out infinite alternate;
+  }
+  @keyframes gw{
+    0%{box-shadow:0 0 50px rgba(37,99,235,.4),0 0 100px rgba(16,185,129,.2)}
+    100%{box-shadow:0 0 90px rgba(37,99,235,.6),0 0 160px rgba(16,185,129,.35)}
+  }
+  .qr-inner{background:#fff;border-radius:24px;padding:clamp(14px,1.5vw,24px);}
+
+  .qr-svg{display:block;width:clamp(240px,22vw,340px);height:clamp(240px,22vw,340px);}
+
+  .corner{position:absolute;width:28px;height:28px;border-color:#2563eb;border-style:solid;}
+  .tl{top:-3px;left:-3px;border-width:4px 0 0 4px;border-radius:10px 0 0 0}
+  .tr{top:-3px;right:-3px;border-width:4px 4px 0 0;border-radius:0 10px 0 0}
+  .bl{bottom:-3px;left:-3px;border-width:0 0 4px 4px;border-radius:0 0 0 10px}
+  .br{bottom:-3px;right:-3px;border-width:0 4px 4px 0;border-radius:0 0 10px 0}
+
+  .scan-label{
+    font-size:clamp(12px,1vw,17px);
+    color:rgba(255,255,255,.35);
+    letter-spacing:.12em;text-transform:uppercase;text-align:center;
+  }
+
+  /* FOOTER */
+  .footer{
+    position:fixed;bottom:2.5vh;left:0;right:0;
+    display:flex;align-items:center;justify-content:center;gap:18px;
+  }
+  .fline{width:60px;height:1px;background:rgba(255,255,255,.09)}
+  .ftxt{font-size:clamp(10px,.8vw,14px);color:rgba(255,255,255,.2);letter-spacing:.18em;text-transform:uppercase}
+  .ftxt span{
+    background:linear-gradient(90deg,#2563eb,#10b981);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:700;
+  }
+</style>
+</head>
+<body>
+
+<div class="bg"></div>
+<div class="dots"></div>
+<div class="dline"></div>
+<div class="dline"></div>
+
+<div class="layout">
+
+  <!-- ESQUERDA -->
+  <div class="left">
+    <div class="badge"><span class="bdot"></span>Sistema Online</div>
+    <div class="title">
+      <span class="t1">SISTEMA DE</span>
+      <span class="t2">CADASTRO</span>
+    </div>
+    <div class="desc">
+      Registre sua presença de forma<br>
+      rápida e fácil. Aponte a câmera do<br>
+      seu celular para o QR Code.
+    </div>
+    <div class="url-box">
+      <div class="uicon">🔗</div>
+      <div>
+        <div class="ulabel">Acesse pelo link</div>
+        <div class="uval">midiaatos.github.io/igreja-presenca</div>
+      </div>
+    </div>
+    <div class="hint">📱 Câmera do celular · Sem precisar de app</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- DIREITA -->
+  <div class="right">
+    <div class="qr-frame">
+      <div class="corner tl"></div><div class="corner tr"></div>
+      <div class="corner bl"></div><div class="corner br"></div>
+      <div class="qr-inner">
+        <svg class="qr-svg" viewBox="0 0 37 37" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" id="qr"></svg>
+      </div>
+    </div>
+    <div class="scan-label">📱 Aponte a câmera aqui</div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <div class="fline"></div>
+  <div class="ftxt">Desenvolvido por <span>Mídia Atos</span> · Igreja Atos de Amor Manaus</div>
+  <div class="fline"></div>
+</div>
+
+<script>
+const cells = "0,0|1,0|2,0|3,0|4,0|5,0|6,0|8,0|12,0|13,0|14,0|17,0|19,0|23,0|25,0|26,0|27,0|30,0|31,0|32,0|33,0|34,0|35,0|36,0|0,1|6,1|9,1|10,1|11,1|12,1|13,1|19,1|23,1|24,1|25,1|27,1|30,1|36,1|0,2|2,2|3,2|4,2|6,2|9,2|12,2|13,2|14,2|15,2|16,2|21,2|23,2|27,2|30,2|32,2|33,2|34,2|36,2|0,3|2,3|3,3|4,3|6,3|8,3|10,3|11,3|12,3|13,3|15,3|16,3|17,3|18,3|20,3|23,3|26,3|30,3|32,3|33,3|34,3|36,3|0,4|2,4|3,4|4,4|6,4|14,4|15,4|17,4|18,4|20,4|22,4|24,4|25,4|26,4|27,4|28,4|30,4|32,4|33,4|34,4|36,4|0,5|6,5|9,5|10,5|12,5|13,5|15,5|16,5|22,5|24,5|26,5|27,5|28,5|30,5|36,5|0,6|1,6|2,6|3,6|4,6|5,6|6,6|8,6|10,6|12,6|14,6|16,6|18,6|20,6|22,6|24,6|26,6|28,6|30,6|31,6|32,6|33,6|34,6|35,6|36,6|9,7|11,7|13,7|15,7|16,7|18,7|20,7|25,7|28,7|2,8|4,8|5,8|6,8|8,8|9,8|14,8|15,8|17,8|19,8|22,8|23,8|25,8|27,8|28,8|29,8|33,8|36,8|3,9|4,9|5,9|7,9|8,9|11,9|13,9|16,9|17,9|18,9|19,9|22,9|28,9|29,9|30,9|33,9|36,9|2,10|3,10|4,10|6,10|7,10|8,10|11,10|12,10|13,10|14,10|16,10|18,10|21,10|22,10|23,10|25,10|30,10|33,10|34,10|35,10|36,10|1,11|5,11|9,11|10,11|15,11|18,11|19,11|20,11|21,11|22,11|25,11|26,11|27,11|28,11|29,11|31,11|33,11|35,11|0,12|2,12|6,12|7,12|8,12|9,12|10,12|11,12|12,12|19,12|20,12|23,12|25,12|28,12|29,12|30,12|1,13|4,13|5,13|7,13|8,13|9,13|10,13|11,13|14,13|17,13|18,13|19,13|23,13|25,13|28,13|30,13|33,13|34,13|35,13|36,13|0,14|1,14|6,14|7,14|8,14|10,14|14,14|15,14|20,14|21,14|22,14|25,14|29,14|30,14|34,14|35,14|36,14|1,15|4,15|5,15|8,15|9,15|10,15|15,15|17,15|18,15|22,15|25,15|26,15|28,15|29,15|32,15|35,15|0,16|5,16|6,16|8,16|9,16|12,16|13,16|15,16|16,16|17,16|20,16|21,16|23,16|25,16|27,16|28,16|29,16|30,16|31,16|33,16|35,16|36,16|4,17|7,17|8,17|12,17|14,17|18,17|20,17|24,17|25,17|29,17|30,17|33,17|34,17|35,17|36,17|0,18|5,18|6,18|9,18|10,18|14,18|15,18|16,18|17,18|18,18|20,18|21,18|24,18|25,18|31,18|32,18|33,18|34,18|35,18|36,18|2,19|3,19|8,19|10,19|11,19|13,19|14,19|16,19|18,19|22,19|24,19|25,19|26,19|31,19|36,19|3,20|5,20|6,20|9,20|10,20|11,20|12,20|13,20|14,20|15,20|16,20|21,20|22,20|23,20|24,20|25,20|28,20|29,20|30,20|31,20|4,21|8,21|9,21|11,21|14,21|16,21|18,21|19,21|23,21|24,21|25,21|26,21|29,21|30,21|35,21|36,21|2,22|3,22|5,22|6,22|12,22|13,22|14,22|16,22|19,22|20,22|21,22|22,22|24,22|25,22|26,22|28,22|29,22|30,22|32,22|33,22|34,22|35,22|36,22|3,23|7,23|8,23|9,23|10,23|11,23|20,23|21,23|23,23|24,23|25,23|26,23|35,23|36,23|0,24|1,24|2,24|3,24|5,24|6,24|15,24|17,24|18,24|20,24|21,24|23,24|24,24|25,24|27,24|28,24|29,24|30,24|31,24|1,25|2,25|4,25|7,25|9,25|12,25|13,25|14,25|15,25|16,25|19,25|22,25|23,25|24,25|28,25|30,25|34,25|35,25|36,25|0,26|4,26|6,26|12,26|14,26|15,26|17,26|20,26|23,26|24,26|30,26|32,26|33,26|34,26|35,26|36,26|1,27|2,27|3,27|4,27|5,27|8,27|9,27|11,27|12,27|13,27|16,27|22,27|24,27|25,27|26,27|30,27|31,27|35,27|0,28|4,28|6,28|8,28|9,28|10,28|11,28|12,28|15,28|17,28|18,28|20,28|23,28|24,28|25,28|28,28|29,28|30,28|31,28|32,28|33,28|35,28|36,28|8,29|13,29|15,29|18,29|19,29|21,29|24,29|27,29|28,29|32,29|35,29|36,29|0,30|1,30|2,30|3,30|4,30|5,30|6,30|9,30|10,30|11,30|14,30|16,30|19,30|20,30|21,30|26,30|27,30|28,30|30,30|32,30|34,30|35,30|36,30|0,31|6,31|8,31|9,31|10,31|14,31|15,31|17,31|18,31|19,31|21,31|22,31|23,31|24,31|25,31|26,31|27,31|28,31|32,31|0,32|2,32|3,32|4,32|6,32|8,32|9,32|11,32|13,32|15,32|17,32|19,32|21,32|24,32|25,32|28,32|29,32|30,32|31,32|32,32|33,32|0,33|2,33|3,33|4,33|6,33|9,33|10,33|11,33|13,33|14,33|17,33|19,33|20,33|21,33|22,33|23,33|25,33|26,33|28,33|29,33|31,33|32,33|33,33|35,33|36,33|0,34|2,34|3,34|4,34|6,34|8,34|9,34|13,34|17,34|19,34|21,34|22,34|25,34|26,34|27,34|29,34|32,34|33,34|34,34|36,34|0,35|6,35|9,35|11,35|14,35|16,35|18,35|21,35|23,35|25,35|28,35|30,35|31,35|32,35|35,35|0,36|1,36|2,36|3,36|4,36|5,36|6,36|9,36|11,36|13,36|14,36|15,36|19,36|21,36|22,36|24,36|25,36|27,36|28,36|29,36|32,36|35,36|36,36";
+const svg = document.getElementById('qr');
+let r = '';
+cells.split('|').forEach(c => {
+  const [x,y] = c.split(',').map(Number);
+  r += `<rect x="${x}" y="${y}" width="1" height="1" fill="#0f172a"/>`;
+});
+svg.innerHTML = r;
+</script>
+</body>
+</html>
