@@ -271,7 +271,7 @@
       <div class="chart-body"><canvas id="chartCultos"></canvas></div>
       <div class="chart-legend">
         <span><i class="dot" style="background:var(--blue)"></i> Membros</span>
-        <span><i class="dot" style="background:var(--green)"></i> Visitantes</span>
+        <span><i class="dot" style="background:#1e3a8a"></i> Visitantes</span>
       </div>
     </div>
 
@@ -301,7 +301,7 @@
           <div class="list-scroll" id="ministerios"><div class="empty">Carregando…</div></div>
         </div>
         <div class="panel" style="flex:1">
-          <div class="panel-head"><div class="panel-title">Nossa Igreja</div><div class="panel-tag" style="color:var(--blue);background:var(--blue-soft)">MEMBROS</div></div>
+          <div class="panel-head"><div class="panel-title">Nossa Igreja</div><div class="panel-tag" style="color:#1e3a8a;background:rgba(30,58,138,0.1)">MEMBROS</div></div>
           <div class="floater-wrap" id="floaterWrap"></div>
         </div>
       </div>
@@ -351,7 +351,7 @@
     img.outerHTML = iniciaisHtml(img.dataset.nome, img.dataset.cor);
   }
 
-  const FLOATER_CORES = ['#2563eb','#7c3aed','#0ea472','#d97706'];
+  const FLOATER_CORES = ['#1e3a8a','#1e40af','#1d4ed8','#2563eb'];
   function floaterIniciaisHtml(nome, cor){
     const iniciais = nome.trim().split(/\s+/).slice(0,2).map(p=>p[0]).join('').toUpperCase();
     return `<div class="floater-photo-fallback" style="--c:${cor}">${iniciais}</div>`;
@@ -467,8 +467,10 @@
     if(lista.length === 0){ el.innerHTML = '<div class="empty">Sem detalhes individuais pra esse culto</div>'; return; }
     const corVerde = getComputedStyle(document.documentElement).getPropertyValue('--green').trim();
     const corVermelho = getComputedStyle(document.documentElement).getPropertyValue('--red').trim();
+    const corAzulVisitante = '#1e3a8a';
     el.innerHTML = '<div class="rank-grid">' + lista.map(m => {
-      const cor = m.presente ? corVerde : corVermelho;
+      const ehVisitante = m.tipo && m.tipo.includes('Visitante');
+      const cor = ehVisitante ? corAzulVisitante : (m.presente ? corVerde : corVermelho);
       return `<div class="rank-card" data-nome="${m.nome.replace(/"/g,'&quot;')}" style="--c:${cor}">
         <div class="rank-card-head">
           ${avatarHtml(m.nome, m.foto, cor)}
@@ -568,15 +570,15 @@
       const r = 4;
 
       ctx.save();
-      ctx.shadowColor = 'rgba(14,164,114,0.45)'; ctx.shadowBlur = 8;
-      ctx.fillStyle = '#0ea472';
+      ctx.shadowColor = 'rgba(30,58,138,0.45)'; ctx.shadowBlur = 8;
+      ctx.fillStyle = '#1e3a8a';
       ctx.fillRect(x, yBase-visH, barW, visH);
       ctx.restore();
 
       ctx.save();
-      ctx.shadowColor = 'rgba(37,99,235,0.4)'; ctx.shadowBlur = 10;
+      ctx.shadowColor = 'rgba(124,58,237,0.4)'; ctx.shadowBlur = 10;
       const gradBarra = ctx.createLinearGradient(0, yBase-totalH, 0, yBase-visH);
-      gradBarra.addColorStop(0, '#38bdf8'); gradBarra.addColorStop(1, '#2563eb');
+      gradBarra.addColorStop(0, '#c4b5fd'); gradBarra.addColorStop(1, '#7c3aed');
       ctx.fillStyle = gradBarra;
       _roundRectTop(ctx, x, yBase-totalH, barW, membrosH, r);
       ctx.restore();
